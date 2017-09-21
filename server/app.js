@@ -5,6 +5,8 @@ const partials = require('express-partials');
 const bodyParser = require('body-parser');
 const Auth = require('./middleware/auth');
 const models = require('./models');
+const db = require('./db');
+const mysql = require('mysql');
 
 const app = express();
 
@@ -20,6 +22,7 @@ app.use(express.static(path.join(__dirname, '../public')));
 app.get('/', 
 (req, res) => {
   res.render('index');
+  console.log('line 24');
 });
 
 app.get('/create', 
@@ -77,8 +80,48 @@ app.post('/links',
 /************************************************************/
 // Write your authentication routes here
 /************************************************************/
+// app.post('/signup', (req, res, result) => {
+//   console.log('hello! this is on line 82');
+//   res.render('signup');
+// });
+app.get('/signup', 
+(req, res) => {
+  res.render('signup');
+});
 
-
+app.post('/signup', (req, res, callback) => {
+  
+  var username = req.body.username;
+  var pw = req.body.password;
+  console.log('hi on line 95', username);
+  return models.Users.get({username})
+    .then(results => {
+      if (!results) {
+        return models.Users.create({username: pw}) 
+          .then (results =>
+          callback(results)
+        );
+        
+      } else {
+        res.redirect('/signup');
+      
+      }
+    });
+  // isf (!username ) {
+  //   res.render('signup');
+  // } else {
+  //   var queryStr = 'SELECT * FROM users WHERE username =' + username;
+  //   db.query(queryStr, function(err, results) {
+  //     console.log('signup account result', results);
+  //     if (!results) {
+  //       db.query('insert into users (username) Values (' + username + ')', function(err, results){
+  //         callback(results);
+  //       });
+  //     }
+      
+  //   });
+  // }
+});
 
 /************************************************************/
 // Handle the code parameter route last - if all other routes fail
