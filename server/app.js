@@ -89,22 +89,20 @@ app.get('/signup',
   res.render('signup');
 });
 
-app.post('/signup', (req, res, callback) => {
+app.post('/signup', (req, res) => {
   
   var username = req.body.username;
   var pw = req.body.password;
-  console.log('hi on line 95', username);
   return models.Users.get({username})
     .then(results => {
       if (!results) {
-        return models.Users.create({username: pw}) 
-          .then (results =>
-          callback(results)
-        );
-        
+        return models.Users.create({username: username, password: pw}) 
+          .then (results => {
+            res.redirect('/');
+          }
+        ); 
       } else {
         res.redirect('/signup');
-      
       }
     });
   // isf (!username ) {
@@ -123,6 +121,40 @@ app.post('/signup', (req, res, callback) => {
   // }
 });
 
+app.get('/login', 
+(req, res) => {
+  res.render('login');
+});
+
+app.post('/login', (req, res) => {
+  var username = req.body.username;
+  var attempted = req.body.password;
+  console.log('line 133', username, attempted);
+  return models.Users.get({username})
+    .then(results => {
+      if (!results) {
+        res.redirect('/login');
+      } else {
+
+        
+        var exist = models.Users.compare(req.body.password, results.password, results.salt); 
+        console.log('attempted', attempted, "hello");
+        console.log('password', results.password);
+        console.log('salt', results.salt);
+        console.log('exist', exist);
+        if (exist) {
+          res.redirect('/');
+          
+        } else {
+          res.redirect('/login');
+          
+        }   
+         
+      } 
+      
+    });
+
+});
 /************************************************************/
 // Handle the code parameter route last - if all other routes fail
 // assume the route is a short code and try and handle it here.
