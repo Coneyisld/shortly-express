@@ -129,7 +129,7 @@ app.get('/login',
 app.post('/login', (req, res) => {
   var username = req.body.username;
   var attempted = req.body.password;
-  console.log('line 133', username, attempted);
+  //console.log('line 133', username, attempted);
   return models.Users.get({username})
     .then(results => {
       if (!results) {
@@ -138,10 +138,10 @@ app.post('/login', (req, res) => {
 
         
         var exist = models.Users.compare(req.body.password, results.password, results.salt); 
-        console.log('attempted', attempted, "hello");
-        console.log('password', results.password);
-        console.log('salt', results.salt);
-        console.log('exist', exist);
+        // console.log('attempted', attempted, "hello");
+        // console.log('password', results.password);
+        // console.log('salt', results.salt);
+        // console.log('exist', exist);
         if (exist) {
           res.redirect('/');
           
